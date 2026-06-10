@@ -19,15 +19,18 @@ Tagline: "Empower. Equip. Connect. Succeed."
 
 ## Commands
 - `npm run dev` — start the dev server (form at `/`, admin at `/admin`).
-- `npm run build` — runs `prisma generate` then `next build` (Vercel uses this).
+- `npm run build` — runs `prisma generate && prisma db push && next build` (Vercel uses
+  this; the `db push` step creates/syncs the table on deploy via the `directUrl`).
 - `npm run lint` — `next lint`.
 - `npm run db:push` — push `schema.prisma` to the database (no migration files; this
-  project uses `db push`, not `prisma migrate`). Run once against prod after first deploy.
+  project uses `db push`, not `prisma migrate`). Prod is synced automatically by the
+  build, so this is mainly a local/manual escape hatch.
 - `npm run db:studio` — open Prisma Studio to inspect/edit registrations.
 - No test runner is configured. If you add tests, also wire up the script and tooling.
 
 Env vars (`.env`, see `.env.example`): `DATABASE_URL`, `ADMIN_PASSWORD`, `SESSION_SECRET`
-(generate the secret with `openssl rand -hex 32`).
+(generate the secret with `openssl rand -hex 32`). On Vercel, the Neon integration also
+injects `DATABASE_URL_UNPOOLED` (used by `directUrl` in `schema.prisma` for schema pushes).
 
 ## Brand
 - Navy `#0B2350`, gold `#F4A81C`, green `#1F9E5A`, light bg `#EEF2F8`.

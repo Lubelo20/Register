@@ -37,11 +37,18 @@ Built with Next.js 14 (App Router) + TypeScript + Prisma + PostgreSQL. Designed 
 
 1. Push this repo to GitHub.
 2. In Vercel: **New Project** → import the repo.
-3. Add a database: **Storage → Create → Postgres** (this sets `DATABASE_URL` for you), or paste a Neon/Supabase URL into **Settings → Environment Variables**.
+3. Add a database: **Storage → Create → Postgres** (Neon). When prompted, connect it
+   to the project — this injects `DATABASE_URL` (pooled) and `DATABASE_URL_UNPOOLED`
+   (direct) automatically.
 4. Also add `ADMIN_PASSWORD` and `SESSION_SECRET` as environment variables.
-5. Deploy. After the first deploy, run `npm run db:push` once against the production database (locally with the prod `DATABASE_URL`, or via a one-off script) to create the table.
+5. Deploy. The build creates/syncs the `Registration` table automatically (see below),
+   so there's no separate migration step.
 
-> The build runs `prisma generate` automatically (see `package.json` → `build`).
+> The build runs `prisma generate && prisma db push && next build` (see
+> `package.json` → `build`). `prisma db push` uses the **direct** connection via the
+> `directUrl` in `schema.prisma` (`DATABASE_URL_UNPOOLED`), while the app's runtime
+> queries use the pooled `DATABASE_URL`. The push is idempotent — it only applies
+> schema diffs.
 
 ## Notes
 
