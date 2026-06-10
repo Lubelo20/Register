@@ -14,8 +14,7 @@ export default function HomePage() {
         <div className="wrap">
           <p className="eyebrow">Durban, South Africa · Registration</p>
           <h1>
-            <span className="accent">Youth</span> Digital Empowerment &amp;
-            <br />
+            <span className="accent">Youth</span> Digital Empowerment &amp;{" "}
             Entrepreneurship <span className="accent-g">Master Class</span>
           </h1>
           <p className="tag">Empower. Equip. Connect. Succeed.</p>
@@ -52,13 +51,10 @@ export default function HomePage() {
 
           <div className="partners">
             <span className="partners-label">In partnership with</span>
-            <ul className="partners-list">
-              <li>Moses Kotane Research Institute</li>
-              <li>Play Your Part</li>
-              <li>eThekwini Municipality</li>
-              <li>Brand South Africa</li>
-              <li>Wear Your Brand</li>
-            </ul>
+            <p className="partners-names">
+              Moses Kotane Research Institute · Play Your Part · eThekwini
+              Municipality · Brand South Africa · Wear Your Brand
+            </p>
           </div>
         </div>
       </header>
