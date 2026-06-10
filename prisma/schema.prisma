@@ -4,8 +4,12 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  // Pooled connection for serverless runtime queries.
+  url       = env("DATABASE_URL")
+  // Direct (unpooled) connection for schema changes / `prisma db push`.
+  // Falls back to DATABASE_URL locally where only one URL is set.
+  directUrl = env("DATABASE_URL_UNPOOLED")
 }
 
 model Registration {
