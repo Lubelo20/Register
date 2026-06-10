@@ -1,10 +1,14 @@
 import { NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
+// 6-digit code → 900k possibilities. Combined with the retry-on-collision
+// loop below, this comfortably supports thousands of registrations without
+// two people ever sharing a (unique) reference.
 function makeReference(): string {
-  const n = Math.floor(1000 + Math.random() * 9000);
+  const n = Math.floor(100000 + Math.random() * 900000);
   return `YDEE-2026-${n}`;
 }
 
@@ -46,32 +50,45 @@ export async function POST(req: Request) {
     }
 
     const hasBusiness = d.hasBusiness === "Yes";
-    const reference = makeReference();
 
-    await prisma.registration.create({
-      data: {
-        reference,
-        firstName: String(d.firstName).trim(),
-        surname: String(d.surname).trim(),
-        email: String(d.email).trim(),
-        phone: String(d.phone).trim(),
-        city: String(d.city).trim(),
-        occupation: String(d.occupation).trim(),
-        status: String(d.status),
-        institution: d.institution || null,
-        hasBusiness,
-        businessName: hasBusiness ? d.businessName || null : null,
-        sector: hasBusiness ? d.sector || null : null,
-        stage: hasBusiness ? d.stage || null : null,
-        businessDesc: hasBusiness ? d.businessDesc || null : null,
-        hasWebsite: hasBusiness ? d.hasWebsite === "Yes" : null,
-        domain: hasBusiness && d.hasWebsite === "Yes" ? d.domain || null : null,
-        socials: Array.isArray(d.socials) ? d.socials : [],
-        referral: d.referral || null,
-        goals: d.goals || null,
-        marketingOptIn: Boolean(d.marketingOptIn),
-      },
-    });
+    const data = {
+      firstName: String(d.firstName).trim(),
+      surname: String(d.surname).trim(),
+      email: String(d.email).trim(),
+      phone: String(d.phone).trim(),
+      city: String(d.city).trim(),
+      occupation: String(d.occupation).trim(),
+      status: String(d.status),
+      institution: d.institution || null,
+      hasBusiness,
+      businessName: hasBusiness ? d.businessName || null : null,
+      sector: hasBusiness ? d.sector || null : null,
+      stage: hasBusiness ? d.stage || null : null,
+      businessDesc: hasBusiness ? d.businessDesc || null : null,
+      hasWebsite: hasBusiness ? d.hasWebsite === "Yes" : null,
+      domain: hasBusiness && d.hasWebsite === "Yes" ? d.domain || null : null,
+      socials: Array.isArray(d.socials) ? d.socials : [],
+      referral: d.referral || null,
+      goals: d.goals || null,
+      marketingOptIn: Boolean(d.marketingOptIn),
+    };
+
+    // Retry on the (rare) chance the random reference is already taken, so a
+    // collision never turns into a failed registration as numbers grow.
+    let reference = "";
+    for (let attempt = 0; attempt < 6; attempt++) {
+      reference = makeReference();
+      try {
+        await prisma.registration.create({ data: { reference, ...data } });
+        break;
+      } catch (e) {
+        const isDuplicateReference =
+          e instanceof Prisma.PrismaClientKnownRequestError &&
+          e.code === "P2002";
+        if (isDuplicateReference && attempt < 5) continue;
+        throw e;
+      }
+    }
 
     return NextResponse.json({ ok: true, reference });
   } catch (err) {

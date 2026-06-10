@@ -64,6 +64,25 @@ function fmtDate(iso: string) {
 export default function AdminTable({ rows }: { rows: Row[] }) {
   const router = useRouter();
   const [q, setQ] = useState("");
+  const [confirmId, setConfirmId] = useState<string | null>(null);
+  const [busyId, setBusyId] = useState<string | null>(null);
+  const [delError, setDelError] = useState("");
+
+  async function remove(id: string) {
+    setDelError("");
+    setBusyId(id);
+    try {
+      const res = await fetch(`/api/admin/registrations/${id}`, { method: "DELETE" });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.ok) throw new Error(data.error || "Could not delete.");
+      setConfirmId(null);
+      router.refresh(); // re-query the server component so the row disappears
+    } catch (err) {
+      setDelError(err instanceof Error ? err.message : "Could not delete.");
+    } finally {
+      setBusyId(null);
+    }
+  }
 
   const filtered = useMemo(() => {
     const term = q.trim().toLowerCase();
@@ -136,6 +155,8 @@ export default function AdminTable({ rows }: { rows: Row[] }) {
         </button>
       </div>
 
+      {delError && <p className="form-error" style={{ marginBottom: 12 }}>{delError}</p>}
+
       <div className="table-wrap">
         {filtered.length === 0 ? (
           <div className="empty">
@@ -155,6 +176,7 @@ export default function AdminTable({ rows }: { rows: Row[] }) {
                 <th>Business</th>
                 <th>Website</th>
                 <th>Socials</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -196,6 +218,37 @@ export default function AdminTable({ rows }: { rows: Row[] }) {
                     )}
                   </td>
                   <td>{r.socials.length ? r.socials.join(", ") : "—"}</td>
+                  <td className="actions-cell">
+                    {confirmId === r.id ? (
+                      <span className="confirm-del">
+                        <span className="confirm-q">Delete?</span>
+                        <button
+                          className="btn-mini btn-mini-danger"
+                          onClick={() => remove(r.id)}
+                          disabled={busyId === r.id}
+                        >
+                          {busyId === r.id ? "…" : "Yes"}
+                        </button>
+                        <button
+                          className="btn-mini"
+                          onClick={() => setConfirmId(null)}
+                          disabled={busyId === r.id}
+                        >
+                          No
+                        </button>
+                      </span>
+                    ) : (
+                      <button
+                        className="btn-mini btn-mini-ghost"
+                        onClick={() => {
+                          setDelError("");
+                          setConfirmId(r.id);
+                        }}
+                      >
+                        Delete
+                      </button>
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>
