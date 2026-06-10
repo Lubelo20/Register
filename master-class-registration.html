@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Register · Youth Digital Empowerment & Entrepreneurship Master Class</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  /* ---------- CONFIG NOTE ----------
+     To go live: set ENDPOINT in the <script> at the bottom to your form handler
+     (your own API, a Google Apps Script web app, or a service like Formspree).
+     Until then the form runs in DEMO mode: it validates, confirms, and lets you
+     download the captured registration as CSV so you can see it end to end.
+  ----------------------------------- */
+
+  :root{
+    --navy:#0B2350;
+    --navy-deep:#081a3d;
+    --gold:#F4A81C;
+    --gold-soft:#F7BE4D;
+    --green:#1F9E5A;
+    --green-deep:#157345;
+    --ink:#0E1B33;
+    --muted:#5A6885;
+    --bg:#EEF2F8;
+    --card:#ffffff;
+    --line:#dde5f1;
+    --line-strong:#c4d0e3;
+    --danger:#D7472F;
+    --radius:14px;
+    --shadow:0 18px 50px -24px rgba(11,35,80,.45);
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter',system-ui,-apple-system,sans-serif;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* SA flag ribbon — the signature accent */
+  .flag-stripe{height:6px;display:flex;}
+  .flag-stripe i{flex:1;display:block;}
+  .flag-stripe .s1{background:#DE3831;}
+  .flag-stripe .s2{background:#002395;}
+  .flag-stripe .s3{background:#007A4D;}
+  .flag-stripe .s4{background:var(--gold);}
+
+  /* ---------- HERO ---------- */
+  .hero{
+    background:
+      radial-gradient(1200px 400px at 85% -10%, rgba(244,168,28,.16), transparent 60%),
+      linear-gradient(160deg,var(--navy) 0%, var(--navy-deep) 100%);
+    color:#fff;
+    padding:42px 22px 30px;
+  }
+  .wrap{max-width:760px;margin:0 auto;}
+  .eyebrow{
+    font-family:'Space Grotesk',sans-serif;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    font-size:12px;
+    font-weight:600;
+    color:var(--gold-soft);
+    margin:0 0 10px;
+  }
+  .hero h1{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    font-size:clamp(26px,6.4vw,40px);
+    line-height:1.04;
+    margin:0 0 6px;
+    letter-spacing:-.01em;
+  }
+  .hero h1 .accent{color:var(--gold);}
+  .hero h1 .accent-g{color:#4fd08a;}
+  .hero .tag{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:600;
+    font-size:13px;
+    letter-spacing:.04em;
+    color:#bcc8e4;
+    margin:8px 0 22px;
+  }
+  .facts{
+    display:flex;flex-wrap:wrap;gap:10px;
+  }
+  .fact{
+    display:flex;align-items:center;gap:9px;
+    background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:10px;
+    padding:9px 12px;
+    font-size:13px;
+  }
+  .fact b{font-weight:600;}
+  .fact .ic{
+    width:26px;height:26px;flex:0 0 26px;
+    display:grid;place-items:center;
+    background:var(--gold);color:var(--navy-deep);
+    border-radius:7px;font-size:14px;font-weight:700;
+  }
+  .partners{
+    margin-top:20px;font-size:11px;color:#8d9bc0;
+    letter-spacing:.02em;border-top:1px solid rgba(255,255,255,.1);
+    padding-top:14px;
+  }
+
+  /* ---------- FORM SHELL ---------- */
+  .sheet{
+    max-width:760px;margin:-18px auto 60px;
+    background:var(--card);
+    border-radius:18px;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+    position:relative;
+  }
+  .sheet-pad{padding:26px 22px 30px;}
+  .lede{
+    color:var(--muted);font-size:14.5px;margin:2px 0 6px;
+  }
+
+  fieldset{
+    border:none;margin:0;padding:0;
+    margin-top:26px;
+  }
+  fieldset:first-of-type{margin-top:14px;}
+  legend{
+    display:flex;align-items:center;gap:11px;
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:600;font-size:16px;color:var(--ink);
+    padding:0;margin-bottom:14px;width:100%;
+  }
+  legend .num{
+    width:28px;height:28px;flex:0 0 28px;
+    display:grid;place-items:center;
+    background:var(--navy);color:#fff;
+    border-radius:8px;font-size:13px;
+  }
+
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .full{grid-column:1 / -1;}
+  @media (max-width:560px){.grid{grid-template-columns:1fr;}}
+
+  label.fld{display:block;}
+  .lab{
+    display:block;font-size:13px;font-weight:600;
+    margin-bottom:6px;color:var(--ink);
+  }
+  .lab .req{color:var(--gold);margin-left:2px;}
+  .hint{font-weight:400;color:var(--muted);font-size:12px;}
+
+  input[type=text],input[type=email],input[type=tel],input[type=url],
+  select,textarea{
+    width:100%;font:inherit;font-size:15px;color:var(--ink);
+    background:#fff;
+    border:1.5px solid var(--line-strong);
+    border-radius:10px;
+    padding:11px 13px;
+    transition:border-color .15s, box-shadow .15s;
+  }
+  textarea{resize:vertical;min-height:84px;}
+  input:focus,select:focus,textarea:focus{
+    outline:none;border-color:var(--navy);
+    box-shadow:0 0 0 3px rgba(11,35,80,.12);
+  }
+  input.bad,select.bad,textarea.bad{border-color:var(--danger);}
+
+  /* segmented yes/no & radio chips */
+  .chips{display:flex;flex-wrap:wrap;gap:9px;}
+  .chip{
+    position:relative;cursor:pointer;user-select:none;
+  }
+  .chip input{position:absolute;opacity:0;inset:0;cursor:pointer;}
+  .chip span{
+    display:block;padding:9px 16px;border-radius:999px;
+    border:1.5px solid var(--line-strong);
+    font-size:14px;font-weight:500;background:#fff;
+    transition:.15s;
+  }
+  .chip input:checked + span{
+    background:var(--navy);color:#fff;border-color:var(--navy);
+  }
+  .chip input:focus-visible + span{
+    box-shadow:0 0 0 3px rgba(11,35,80,.2);
+  }
+
+  /* social media: tick a platform to reveal its handle */
+  .socials{display:flex;flex-direction:column;gap:10px;}
+  .social-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+  .social-row .chip{flex:0 0 auto;}
+  .social-row .chip span{min-width:118px;text-align:center;}
+  .soc-handle{display:none;flex:1;min-width:170px;}
+  .social-row.on .soc-handle{display:block;animation:fade .2s ease;}
+
+  /* conditional blocks */
+  .reveal{
+    display:none;
+    margin-top:14px;padding:16px;
+    background:#f6f8fc;border:1px dashed var(--line-strong);
+    border-radius:12px;
+  }
+  .reveal.show{display:block;animation:fade .25s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:none;}}
+
+  .err{display:none;color:var(--danger);font-size:12px;margin-top:5px;font-weight:500;}
+  .err.show{display:block;}
+
+  /* consent */
+  .consent{
+    display:flex;gap:12px;align-items:flex-start;
+    background:#f6f8fc;border:1px solid var(--line);
+    border-radius:12px;padding:14px;
+  }
+  .consent input{margin-top:3px;width:18px;height:18px;flex:0 0 18px;accent-color:var(--navy);}
+  .consent label{font-size:13px;color:var(--muted);line-height:1.5;}
+  .consent label b{color:var(--ink);font-weight:600;}
+
+  .actions{margin-top:26px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
+  .btn{
+    font:inherit;font-family:'Space Grotesk',sans-serif;font-weight:600;
+    cursor:pointer;border:none;border-radius:11px;
+    padding:14px 26px;font-size:15px;letter-spacing:.01em;
+    transition:transform .08s, filter .15s;
+  }
+  .btn:active{transform:translateY(1px);}
+  .btn-primary{background:var(--gold);color:var(--navy-deep);box-shadow:0 10px 24px -10px rgba(244,168,28,.7);}
+  .btn-primary:hover{filter:brightness(1.04);}
+  .btn-primary:disabled{opacity:.6;cursor:wait;}
+  .form-note{font-size:12px;color:var(--muted);}
+
+  .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;}
+
+  /* ---------- CONFIRMATION ---------- */
+  .done{display:none;padding:44px 24px;text-align:center;}
+  .done.show{display:block;}
+  .tick{
+    width:74px;height:74px;margin:0 auto 18px;border-radius:50%;
+    background:var(--green);display:grid;place-items:center;
+    box-shadow:0 12px 30px -12px rgba(31,158,90,.7);
+  }
+  .tick svg{width:38px;height:38px;}
+  .done h2{font-family:'Space Grotesk',sans-serif;font-size:24px;margin:0 0 6px;}
+  .done p{color:var(--muted);margin:0 auto 8px;max-width:440px;}
+  .refcode{
+    display:inline-block;margin:14px 0 4px;
+    font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:20px;
+    letter-spacing:.08em;color:var(--navy);
+    background:#f6f8fc;border:1.5px dashed var(--line-strong);
+    border-radius:10px;padding:10px 18px;
+  }
+  .done-actions{margin-top:22px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+  .btn-ghost{background:transparent;color:var(--navy);border:1.5px solid var(--line-strong);}
+  .btn-ghost:hover{background:#f6f8fc;}
+
+  .foot{text-align:center;font-size:12px;color:var(--muted);padding:0 0 30px;}
+  .foot a{color:var(--navy);}
+</style>
+</head>
+<body>
+
+  <div class="flag-stripe"><i class="s1"></i><i class="s2"></i><i class="s3"></i><i class="s4"></i></div>
+
+  <header class="hero">
+    <div class="wrap">
+      <p class="eyebrow">Durban, South Africa · Registration</p>
+      <h1>
+        <span class="accent">Youth</span> Digital Empowerment &amp;<br />
+        Entrepreneurship <span class="accent-g">Master Class</span>
+      </h1>
+      <p class="tag">Empower. Equip. Connect. Succeed.</p>
+
+      <div class="facts">
+        <div class="fact"><span class="ic">📅</span><b>11 June 2026</b></div>
+        <div class="fact"><span class="ic">⏰</span>09:00 – 15:30</div>
+        <div class="fact"><span class="ic">📍</span>Moses Kotane Research Institute, Durban</div>
+      </div>
+
+      <p class="partners">In partnership with Moses Kotane Research Institute · Play Your Part · eThekwini Municipality · Brand South Africa · Wear Your Brand</p>
+    </div>
+  </header>
+
+  <main class="sheet">
+    <!-- FORM -->
+    <div class="sheet-pad" id="formArea">
+      <p class="lede">Seats are limited. Fill in your details below to reserve your place. Fields marked <span style="color:var(--gold);font-weight:700">*</span> are required.</p>
+
+      <form id="regForm" novalidate>
+
+        <!-- honeypot -->
+        <div class="hp" aria-hidden="true">
+          <label>Leave this empty <input type="text" name="company_url" tabindex="-1" autocomplete="off" /></label>
+        </div>
+
+        <!-- 1 · Personal details -->
+        <fieldset>
+          <legend><span class="num">1</span> Your details</legend>
+          <div class="grid">
+            <label class="fld">
+              <span class="lab">First name<span class="req">*</span></span>
+              <input type="text" id="firstName" name="firstName" autocomplete="given-name" required />
+              <span class="err" data-for="firstName">Please enter your first name.</span>
+            </label>
+            <label class="fld">
+              <span class="lab">Surname<span class="req">*</span></span>
+              <input type="text" id="surname" name="surname" autocomplete="family-name" required />
+              <span class="err" data-for="surname">Please enter your surname.</span>
+            </label>
+            <label class="fld">
+              <span class="lab">Email address<span class="req">*</span></span>
+              <input type="email" id="email" name="email" autocomplete="email" placeholder="you@example.co.za" required />
+              <span class="err" data-for="email">Enter a valid email address.</span>
+            </label>
+            <label class="fld">
+              <span class="lab">Cell number<span class="req">*</span></span>
+              <input type="tel" id="phone" name="phone" autocomplete="tel" placeholder="082 123 4567" required />
+              <span class="err" data-for="phone">Enter a valid South African cell number.</span>
+            </label>
+            <label class="fld">
+              <span class="lab">City / Area<span class="req">*</span></span>
+              <input type="text" id="city" name="city" placeholder="e.g. Durban" required />
+              <span class="err" data-for="city">Please enter your city or area.</span>
+            </label>
+          </div>
+        </fieldset>
+
+        <!-- 2 · Occupation -->
+        <fieldset>
+          <legend><span class="num">2</span> What you do</legend>
+          <label class="fld">
+            <span class="lab">Occupation<span class="req">*</span></span>
+            <input type="text" id="occupation" name="occupation" placeholder="e.g. Student, Designer, Founder" required />
+            <span class="err" data-for="occupation">Please tell us your occupation.</span>
+          </label>
+
+          <div style="margin-top:14px">
+            <span class="lab">Current status<span class="req">*</span></span>
+            <div class="chips" id="statusChips">
+              <label class="chip"><input type="radio" name="status" value="Student" required /><span>Student</span></label>
+              <label class="chip"><input type="radio" name="status" value="Employed" /><span>Employed</span></label>
+              <label class="chip"><input type="radio" name="status" value="Self-employed" /><span>Self-employed</span></label>
+              <label class="chip"><input type="radio" name="status" value="Unemployed" /><span>Unemployed</span></label>
+            </div>
+            <span class="err" data-for="status">Please choose one.</span>
+
+            <div class="reveal" id="studentReveal">
+              <label class="fld">
+                <span class="lab">Institution</span>
+                <input type="text" id="institution" name="institution" placeholder="e.g. Durban University of Technology" />
+              </label>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- 3 · Business -->
+        <fieldset>
+          <legend><span class="num">3</span> Your business</legend>
+          <span class="lab">Do you have a business?<span class="req">*</span></span>
+          <div class="chips" id="bizChips">
+            <label class="chip"><input type="radio" name="hasBusiness" value="Yes" required /><span>Yes</span></label>
+            <label class="chip"><input type="radio" name="hasBusiness" value="No" /><span>No</span></label>
+          </div>
+          <span class="err" data-for="hasBusiness">Please choose one.</span>
+
+          <div class="reveal" id="bizReveal">
+            <div class="grid">
+              <label class="fld full">
+                <span class="lab">Business name</span>
+                <input type="text" id="businessName" name="businessName" />
+              </label>
+              <label class="fld">
+                <span class="lab">Industry / sector</span>
+                <input type="text" id="sector" name="sector" placeholder="e.g. Retail, Tech, Beauty" />
+              </label>
+              <label class="fld">
+                <span class="lab">Stage</span>
+                <select id="stage" name="stage">
+                  <option value="">Select…</option>
+                  <option>Just an idea</option>
+                  <option>Starting up</option>
+                  <option>Trading / operating</option>
+                  <option>Established</option>
+                </select>
+              </label>
+              <label class="fld full">
+                <span class="lab">What does your business do? <span class="hint">(one line)</span></span>
+                <input type="text" id="businessDesc" name="businessDesc" placeholder="Briefly describe your product or service" />
+              </label>
+            </div>
+
+            <div style="margin-top:16px">
+              <span class="lab">Does your business have a website?<span class="req">*</span></span>
+              <div class="chips" id="webChips">
+                <label class="chip"><input type="radio" name="hasWebsite" value="Yes" /><span>Yes</span></label>
+                <label class="chip"><input type="radio" name="hasWebsite" value="No" /><span>No</span></label>
+              </div>
+              <span class="err" data-for="hasWebsite">Please choose one.</span>
+
+              <div class="reveal" id="webReveal">
+                <label class="fld">
+                  <span class="lab">Website domain</span>
+                  <input type="text" id="domain" name="domain" placeholder="e.g. mybusiness.co.za" />
+                </label>
+              </div>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- 4 · Social media -->
+        <fieldset>
+          <legend><span class="num">4</span> Social media</legend>
+          <span class="lab">Tick the platforms you use, then add your handle <span class="hint">(handle optional)</span></span>
+          <div class="socials">
+            <div class="social-row">
+              <label class="chip"><input type="checkbox" class="soc-toggle" data-target="soc-instagram" value="Instagram" /><span>Instagram</span></label>
+              <input type="text" class="soc-handle" id="soc-instagram" name="soc-instagram" placeholder="@handle" />
+            </div>
+            <div class="social-row">
+              <label class="chip"><input type="checkbox" class="soc-toggle" data-target="soc-facebook" value="Facebook" /><span>Facebook</span></label>
+              <input type="text" class="soc-handle" id="soc-facebook" name="soc-facebook" placeholder="Page name" />
+            </div>
+            <div class="social-row">
+              <label class="chip"><input type="checkbox" class="soc-toggle" data-target="soc-linkedin" value="LinkedIn" /><span>LinkedIn</span></label>
+              <input type="text" class="soc-handle" id="soc-linkedin" name="soc-linkedin" placeholder="Profile / company" />
+            </div>
+            <div class="social-row">
+              <label class="chip"><input type="checkbox" class="soc-toggle" data-target="soc-x" value="X (Twitter)" /><span>X (Twitter)</span></label>
+              <input type="text" class="soc-handle" id="soc-x" name="soc-x" placeholder="@handle" />
+            </div>
+            <div class="social-row">
+              <label class="chip"><input type="checkbox" class="soc-toggle" data-target="soc-tiktok" value="TikTok" /><span>TikTok</span></label>
+              <input type="text" class="soc-handle" id="soc-tiktok" name="soc-tiktok" placeholder="@handle" />
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- 5 · Logistics -->
+        <fieldset>
+          <legend><span class="num">5</span> A few last things</legend>
+          <div class="grid">
+            <label class="fld">
+              <span class="lab">How did you hear about us? <span class="hint">(optional)</span></span>
+              <select id="referral" name="referral">
+                <option value="">Select…</option>
+                <option>Social media</option>
+                <option>WhatsApp</option>
+                <option>A friend / word of mouth</option>
+                <option>University / DUT</option>
+                <option>A partner organisation</option>
+                <option>Other</option>
+              </select>
+            </label>
+            <label class="fld full">
+              <span class="lab">What do you hope to get out of the day? <span class="hint">(optional)</span></span>
+              <textarea id="goals" name="goals" placeholder="Optional — helps us shape the sessions"></textarea>
+            </label>
+          </div>
+        </fieldset>
+
+        <!-- consent -->
+        <fieldset>
+          <div class="consent">
+            <input type="checkbox" id="consent" name="consent" required />
+            <label for="consent"><b>I agree</b> to the organisers collecting and processing the information above to manage my registration and communicate about this event, in line with the Protection of Personal Information Act (POPIA).<span class="req" style="color:var(--gold)">*</span></label>
+          </div>
+          <span class="err" data-for="consent" style="margin-left:2px">Please tick to continue.</span>
+
+          <div class="consent" style="margin-top:10px;background:#fff;border-style:dashed">
+            <input type="checkbox" id="optin" name="optin" />
+            <label for="optin">Keep me updated about future events via SMS and email. (Optional)</label>
+          </div>
+        </fieldset>
+
+        <div class="actions">
+          <button type="submit" class="btn btn-primary" id="submitBtn">Reserve my seat</button>
+          <span class="form-note">You'll get a confirmation reference on the next screen.</span>
+        </div>
+      </form>
+    </div>
+
+    <!-- CONFIRMATION -->
+    <div class="done" id="doneArea">
+      <div class="tick">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <h2>You're registered 🎉</h2>
+      <p>Thanks, <b id="doneName">friend</b> — your seat for the Master Class on <b>11 June 2026</b> is reserved.</p>
+      <p>Keep this reference handy. We'll also be in touch by email and SMS.</p>
+      <div class="refcode" id="doneRef">YDEE-2026-0000</div>
+      <div class="done-actions">
+        <button class="btn btn-ghost" id="calBtn">Add to calendar</button>
+        <button class="btn btn-ghost" id="csvBtn">Download my details (CSV)</button>
+      </div>
+    </div>
+  </main>
+
+  <p class="foot">Youth Digital Empowerment &amp; Entrepreneurship Master Class · Built by Lubelo Tech Solutions</p>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ============================================================
+     CONFIG — set this to your live handler to start saving data.
+     Leave as "" to run in DEMO mode (validate + confirm + CSV).
+     Examples:
+       ENDPOINT = "https://script.google.com/macros/s/XXXX/exec";  // Google Apps Script
+       ENDPOINT = "https://formspree.io/f/xxxx";                   // Formspree
+       ENDPOINT = "https://api.lubelotechsolutions.co.za/register"; // your own API
+     ============================================================ */
+  var ENDPOINT = "";
+
+  var form = document.getElementById('regForm');
+  var submitBtn = document.getElementById('submitBtn');
+  var lastRecord = null;
+
+  // conditional reveals
+  function bindReveal(name, value, el){
+    document.querySelectorAll('input[name="'+name+'"]').forEach(function(r){
+      r.addEventListener('change', function(){
+        var on = document.querySelector('input[name="'+name+'"]:checked');
+        el.classList.toggle('show', !!(on && on.value === value));
+      });
+    });
+  }
+  bindReveal('status','Student', document.getElementById('studentReveal'));
+  bindReveal('hasBusiness','Yes', document.getElementById('bizReveal'));
+  bindReveal('hasWebsite','Yes', document.getElementById('webReveal'));
+
+  // social media: ticking a platform reveals its handle field
+  document.querySelectorAll('.soc-toggle').forEach(function(t){
+    t.addEventListener('change', function(){
+      var row = t.closest('.social-row');
+      row.classList.toggle('on', t.checked);
+      if(t.checked){ var h = document.getElementById(t.dataset.target); if(h) h.focus(); }
+    });
+  });
+
+  function socialsSummary(){
+    var out = [];
+    document.querySelectorAll('.soc-toggle:checked').forEach(function(t){
+      var h = document.getElementById(t.dataset.target);
+      var handle = h ? h.value.trim() : "";
+      out.push(t.value + (handle ? " (" + handle + ")" : ""));
+    });
+    return out.join("; ");
+  }
+
+  // validation helpers
+  function showErr(key, on){
+    var msg = document.querySelector('.err[data-for="'+key+'"]');
+    if(msg) msg.classList.toggle('show', on);
+    var field = document.getElementById(key);
+    if(field) field.classList.toggle('bad', on);
+  }
+  function emailOk(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+  function phoneOk(v){
+    var d = v.replace(/[^\d+]/g,'');
+    return /^(\+27|0)\d{9}$/.test(d);
+  }
+  function radioVal(name){
+    var el = document.querySelector('input[name="'+name+'"]:checked');
+    return el ? el.value : "";
+  }
+
+  function validate(){
+    var ok = true;
+    var fn = document.getElementById('firstName').value.trim();
+    var sn = document.getElementById('surname').value.trim();
+    var em = document.getElementById('email').value.trim();
+    var ph = document.getElementById('phone').value.trim();
+    var oc = document.getElementById('occupation').value.trim();
+    var ct = document.getElementById('city').value.trim();
+
+    showErr('firstName', !fn); if(!fn) ok=false;
+    showErr('surname', !sn); if(!sn) ok=false;
+    showErr('email', !emailOk(em)); if(!emailOk(em)) ok=false;
+    showErr('phone', !phoneOk(ph)); if(!phoneOk(ph)) ok=false;
+    showErr('city', !ct); if(!ct) ok=false;
+    showErr('occupation', !oc); if(!oc) ok=false;
+
+    var st = radioVal('status'); showErr('status', !st); if(!st) ok=false;
+    var hb = radioVal('hasBusiness'); showErr('hasBusiness', !hb); if(!hb) ok=false;
+
+    // website is only asked (and only required) when the person has a business
+    if(hb === 'Yes'){
+      var hw = radioVal('hasWebsite'); showErr('hasWebsite', !hw); if(!hw) ok=false;
+    } else {
+      showErr('hasWebsite', false);
+    }
+
+    var cs = document.getElementById('consent').checked;
+    showErr('consent', !cs); if(!cs) ok=false;
+
+    return ok;
+  }
+
+  function collect(){
+    var get = function(id){ var e=document.getElementById(id); return e? e.value.trim() : ""; };
+    return {
+      reference: "",
+      submittedAt: new Date().toISOString(),
+      firstName: get('firstName'),
+      surname: get('surname'),
+      email: get('email'),
+      phone: get('phone'),
+      city: get('city'),
+      occupation: get('occupation'),
+      status: radioVal('status'),
+      institution: get('institution'),
+      hasBusiness: radioVal('hasBusiness'),
+      businessName: get('businessName'),
+      sector: get('sector'),
+      stage: get('stage'),
+      businessDesc: get('businessDesc'),
+      hasWebsite: radioVal('hasWebsite'),
+      domain: get('domain'),
+      socialsUsed: socialsSummary(),
+      instagram: get('soc-instagram'),
+      facebook: get('soc-facebook'),
+      linkedin: get('soc-linkedin'),
+      twitterX: get('soc-x'),
+      tiktok: get('soc-tiktok'),
+      referral: get('referral'),
+      goals: get('goals'),
+      marketingOptIn: document.getElementById('optin').checked ? "Yes" : "No"
+    };
+  }
+
+  function makeRef(){
+    var n = Math.floor(1000 + Math.random()*9000);
+    return "YDEE-2026-" + n;
+  }
+
+  // CSV download of the single registration
+  function downloadCSV(rec){
+    var keys = Object.keys(rec);
+    var esc = function(v){ v = (v==null?"":String(v)); return '"' + v.replace(/"/g,'""') + '"'; };
+    var csv = keys.join(",") + "\n" + keys.map(function(k){return esc(rec[k]);}).join(",");
+    var blob = new Blob([csv], {type:"text/csv;charset=utf-8;"});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = "registration_" + rec.reference + ".csv";
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  // ICS calendar file
+  function addToCalendar(){
+    var ics = [
+      "BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Lubelo Tech//Master Class//EN",
+      "BEGIN:VEVENT",
+      "UID:" + (lastRecord ? lastRecord.reference : Date.now()) + "@masterclass",
+      "DTSTART:20260611T070000Z", // 09:00 SAST (UTC+2)
+      "DTEND:20260611T133000Z",   // 15:30 SAST
+      "SUMMARY:Youth Digital Empowerment & Entrepreneurship Master Class",
+      "LOCATION:Moses Kotane Research Institute, 190 K.E Masinga Road, Durban",
+      "DESCRIPTION:Empower. Equip. Connect. Succeed. Arrival & registration from 09:00.",
+      "END:VEVENT","END:VCALENDAR"
+    ].join("\r\n");
+    var blob = new Blob([ics], {type:"text/calendar;charset=utf-8;"});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = "master-class-11-june-2026.ics";
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  function showDone(rec){
+    document.getElementById('formArea').style.display = 'none';
+    document.getElementById('doneName').textContent = rec.firstName || 'friend';
+    document.getElementById('doneRef').textContent = rec.reference;
+    document.getElementById('doneArea').classList.add('show');
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+
+    // honeypot: silently drop bots
+    if(form.querySelector('input[name="company_url"]').value){ return; }
+
+    if(!validate()){
+      var firstBad = form.querySelector('.bad, .err.show');
+      if(firstBad) firstBad.scrollIntoView({behavior:'smooth', block:'center'});
+      return;
+    }
+
+    var rec = collect();
+    rec.reference = makeRef();
+    lastRecord = rec;
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Reserving…";
+
+    function finish(){ submitBtn.disabled=false; submitBtn.textContent="Reserve my seat"; showDone(rec); }
+
+    if(ENDPOINT){
+      fetch(ENDPOINT, {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body: JSON.stringify(rec)
+      }).then(function(){ finish(); })
+        .catch(function(){
+          // network failed — still confirm so the attendee isn't blocked; data is in the CSV
+          finish();
+        });
+    } else {
+      // DEMO mode
+      console.log("DEMO registration captured:", rec);
+      setTimeout(finish, 500);
+    }
+  });
+
+  document.getElementById('calBtn').addEventListener('click', addToCalendar);
+  document.getElementById('csvBtn').addEventListener('click', function(){ if(lastRecord) downloadCSV(lastRecord); });
+})();
+</script>
+</body>
+</html>

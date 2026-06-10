@@ -1,0 +1,46 @@
+// Prisma schema for the Master Class registration system
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Registration {
+  id             String   @id @default(cuid())
+  reference      String   @unique
+  createdAt      DateTime @default(now())
+
+  // Personal details
+  firstName      String
+  surname        String
+  email          String
+  phone          String
+  city           String
+
+  // What they do
+  occupation     String
+  status         String   // Student | Employed | Self-employed | Unemployed
+  institution    String?  // only when status = Student
+
+  // Business (website only applies when hasBusiness is true)
+  hasBusiness    Boolean
+  businessName   String?
+  sector         String?
+  stage          String?
+  businessDesc   String?
+  hasWebsite     Boolean?
+  domain         String?
+
+  // Social platforms used (tick-only, e.g. ["Instagram","LinkedIn"])
+  socials        String[]
+
+  // Extras
+  referral       String?
+  goals          String?
+  marketingOptIn Boolean  @default(false)
+
+  @@index([createdAt])
+}
